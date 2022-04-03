@@ -7,7 +7,8 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
  
 function Chats() {
-const [loading, setLoading] = useState(true);
+  const didMountRef = useRef(false); 
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
   const { user } = useAuth();
 
@@ -18,15 +19,19 @@ const [loading, setLoading] = useState(true);
     history.push('/');
   }
 
-  const getFile = async (url) =>{
+  async function getFile(url){
     const response = await fetch(url);
+    console.log(response);
     const data = await response.blob();
 
-    return new File([data], "userPhoto.jpg", {type: "image/jpeg"});
+    return new File([data], "userPhoto.jpg", { type: "image/jpeg"});
   }
 
   useEffect(() =>{
-    if (!user){
+    if (!didMountRef.current){
+        didMountRef.current = true
+    
+    if (!user || user === null){
         history.push('/');
         return;
     }
@@ -48,7 +53,7 @@ const [loading, setLoading] = useState(true);
 
         getFile(user.photoURL)
         .then((avatar) =>{
-            formdata.append('avatar', avatar.name)
+            formdata.append('avatar',avatar, avatar.name)
 
             axios.post('https://api.chatengine.io/users/',
             formdata,
@@ -62,8 +67,9 @@ const [loading, setLoading] = useState(true);
             .catch((error) =>{
                 console.log(error);
             })
-        })
+        });
     })
+    }
   }, [user, history])
 
   if(!user || loading) return "Loading...";
