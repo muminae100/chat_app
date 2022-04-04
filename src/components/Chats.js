@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ChatEngine } from 'react-chat-engine';
+import { ChatEngine, getOrCreateChat } from 'react-chat-engine';
 import { auth } from '../components/firebase';
 
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +11,16 @@ function Chats() {
   const [loading, setLoading] = useState(true);
   const history = useHistory();
   const { user } = useAuth();
+
+  const [username, setUsername] = useState('');
+
+	function createDirectChat(creds) {
+		getOrCreateChat(
+			creds,
+			{ is_direct_chat: true, usernames: [username] },
+			() => setUsername('')
+		)
+	}
 
   console.log(user);
 
@@ -72,6 +82,21 @@ function Chats() {
     }
   }, [user, history])
 
+  function renderChatForm(creds) {
+    return (
+        <div>
+            <input 
+                placeholder='Username' 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)} 
+            />
+            <button onClick={() => createDirectChat(creds)}>
+                Create
+            </button>
+        </div>
+    )
+   }
+
   if(!user || loading) return "Loading...";
   return (
     <div className="chats-page">
@@ -88,6 +113,7 @@ function Chats() {
         projectID = { process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID }
         userName = {user.email}
         userSecret = {user.uid}
+        renderNewChatForm={(creds) => renderChatForm(creds)}
         />
     </div>
   );
