@@ -31,11 +31,10 @@ function Chats() {
   function renderChatForm(creds) {
     return (
         <div>
-            <p onClick={handleLogout}>Logout</p>
             <h3>Start a chat</h3>
-            <ul class="list-group">
+            <ul className="list-group">
             {users.map(u => (
-            <li style={{"cursor":"pointer"}} onClick={() => createDirectChat(creds, u.username)} class="list-group-item">{u.username}</li>
+            <li style={{"cursor":"pointer"}} onClick={() => createDirectChat(creds, u.username)} className="list-group-item">{u.username}</li>
             ))}
             </ul>
         </div>
@@ -107,6 +106,44 @@ function Chats() {
   if(!user || loading) return "Loading..."
   return (
     <div className="chats-page">
+        <nav className="navbar navbar-expand-md bg-primary navbar-dark">
+          
+          <a className="navbar-brand" href="#">Chat App</a>
+
+          
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+
+          
+          <div className="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul className="navbar-nav">
+              <li className="nav-item">
+                <a className="nav-link" href="#">Link</a>
+              </li>
+              
+            <li className="nav-item dropdown">
+              <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                Direct message
+              </a>
+              <div className="dropdown-menu">
+                <a className="dropdown-item" href="#">Hitman</a>
+                <a className="dropdown-item" href="#">Simon</a>
+                <a className="dropdown-item" href="#">Mumina</a>
+              </div>
+            </li>
+
+            <li className="nav-item">
+                <a className="nav-link" href="#">Create Group</a>
+              </li>
+
+            <li className="nav-item">
+                <a onClick={handleLogout} className="nav-link" href="#">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
         <ChatEngine 
         height = "calc(100vh - 50px)"
         projectID = { process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID }
