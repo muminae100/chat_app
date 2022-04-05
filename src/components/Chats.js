@@ -127,7 +127,7 @@ function Chats() {
                 Direct message
               </a>
               <div className="dropdown-menu">
-                <a className="dropdown-item" href="#">Hitman</a>
+                <span onClick={() =>renderChatForm()} className="dropdown-item">Hitman</span>
                 <a className="dropdown-item" href="#">Simon</a>
                 <a className="dropdown-item" href="#">Mumina</a>
               </div>
