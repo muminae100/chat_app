@@ -19,8 +19,7 @@ function Chats() {
     setUsers(Data);
   }, [])
 
-  function createDirectChat(creds, name) {
-    setUsername(name);
+  function createDirectChat(creds) {
     getOrCreateChat(
         creds,
         { is_direct_chat: true, usernames: [username] },
@@ -28,17 +27,23 @@ function Chats() {
     )
    }
 
-  function renderChatForm(creds) {
-    return (
-        <div>
-            <h3>Start a chat</h3>
-            <ul className="list-group">
-            {users.map(u => (
-            <li style={{"cursor":"pointer"}} onClick={() => createDirectChat(creds, u.username)} className="list-group-item">{u.username}</li>
-            ))}
-            </ul>
-        </div>
-    );
+  // function renderChatForm(creds) {
+  //   return (
+  //       <div>
+  //           <h3>Start a chat</h3>
+  //           <ul className="list-group">
+  //           {users.map(u => (
+  //           <li style={{"cursor":"pointer"}} onClick={() => createDirectChat(creds, u.username)} key={Math.random()} className="list-group-item">{u.username}</li>
+  //           ))}
+  //           </ul>
+  //       </div>
+  //   );
+  //   }
+
+    function startDirectChat(creds) {
+      setUsername("simonmumina2000@gmail.com");
+      console.log(username);
+      createDirectChat(creds);
     }
 
  
@@ -127,7 +132,7 @@ function Chats() {
                 Direct message
               </a>
               <div className="dropdown-menu">
-                <span onClick={() =>renderChatForm()} className="dropdown-item">Hitman</span>
+                <span className="dropdown-item">Hitman</span>
                 <a className="dropdown-item" href="#">Simon</a>
                 <a className="dropdown-item" href="#">Mumina</a>
               </div>
@@ -149,7 +154,9 @@ function Chats() {
         projectID = { process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID }
         userName = {user.email}
         userSecret = {user.uid}
-        renderNewChatForm={(creds) => renderChatForm(creds)}
+        onConnect={(creds) => startDirectChat(creds)}
+        // onGetOtherPeople={(chatId, people) => console.log(people)}
+        // renderNewChatForm={(creds) => renderChatForm(creds)}
         />
     </div>
   );
