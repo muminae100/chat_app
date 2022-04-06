@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ChatEngine, getOrCreateChat } from 'react-chat-engine';
+import { ChatEngine } from 'react-chat-engine';
 import { auth } from '../components/firebase';
 
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
-import Data from './Data';
  
 function Chats() {
   const didMountRef = useRef(false); 
@@ -14,41 +13,62 @@ function Chats() {
   const { user } = useAuth();
   const [username, setUsername] = useState('');
   const [users, setUsers] = useState(null);
+  const [value, setValue] = useState('');
 
-  useEffect(() =>{
-    setUsers(Data);
-  }, [])
+  const createGroup = () =>{
+    let formData = new FormData();
+    formData.append('title', value);
+    formData.append('is_direct_chat', false);
 
-  function createDirectChat(creds) {
-    getOrCreateChat(
-        creds,
-        { is_direct_chat: true, usernames: [username] },
-        () => setUsername('')
-    )
-   }
-
-  // function renderChatForm(creds) {
-  //   return (
-  //       <div>
-  //           <h3>Start a chat</h3>
-  //           <ul className="list-group">
-  //           {users.map(u => (
-  //           <li style={{"cursor":"pointer"}} onClick={() => createDirectChat(creds, u.username)} key={Math.random()} className="list-group-item">{u.username}</li>
-  //           ))}
-  //           </ul>
-  //       </div>
-  //   );
-  //   }
-
-    function startDirectChat(creds) {
-      setUsername("simonmumina2000@gmail.com");
-      console.log(username);
-      createDirectChat(creds);
+    axios.post('https://api.chatengine.io/chats/',
+    formData,
+    {headers: {
+        "Project-ID": process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID,
+        "User-Name": user.email,
+        "User-Secret": user.uid,
     }
+    })
+    .then((res) =>{
+      console.log(res);
+    })
+    .catch((error) =>{
+      console.log(error.message);
+    })
 
- 
+  }
 
-//   console.log(user);
+  // const createChat = (usernm) =>{
+  //   setUsername(usernm);
+  //   createDirectChat();
+  // }
+
+  const createDirectChat = () =>{
+    console.log("username is",username);
+    let formData = new FormData();
+    formData.append('usernames', [username]);
+    formData.append('is_direct_chat', true);
+
+    axios.put('https://api.chatengine.io/chats/',
+    formData,
+    {headers: {
+        "Project-ID": process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID,
+        "User-Name": user.email,
+        "User-Secret": user.uid,
+    }
+    })
+    .then((res) =>{
+      console.log(res);
+    })
+    .catch((error) =>{
+      console.log(error.message);
+    })
+
+  }
+
+  const handleSubmit = (e) =>{
+    e.preventDefault();
+    createGroup();
+  }
 
   const handleLogout = async () =>{
     await auth.signOut();
@@ -70,6 +90,19 @@ function Chats() {
         history.push('/');
         return;
     }
+    axios.get('https://api.chatengine.io/users/', {
+        headers: {
+            "private-key": process.env.REACT_APP_CHAT_ENGINE_KEY,
+        }
+    })
+    .then((response) =>{
+      if(response.status === 200){
+        setUsers(response.data);
+        // console.log(response.data);
+      }
+    });
+
+
     axios.get('https://api.chatengine.io/users/me/', {
         headers: {
             "project-id": process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID,
@@ -82,7 +115,7 @@ function Chats() {
     })
     .catch(() =>{
         let formdata = new FormData();
-        formdata.append('email', user.email);
+        formdata.append('first_name', user.displayName);
         formdata.append('username', user.email);
         formdata.append('secret', user.uid);
 
@@ -104,6 +137,8 @@ function Chats() {
             })
         });
     })
+
+
     }
   }, [user, history])
 
@@ -113,7 +148,7 @@ function Chats() {
     <div className="chats-page">
         <nav className="navbar navbar-expand-md bg-primary navbar-dark">
           
-          <a className="navbar-brand" href="#">Chat App</a>
+          <span className="navbar-brand">Chat App</span>
 
           
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -123,27 +158,39 @@ function Chats() {
           
           <div className="collapse navbar-collapse" id="collapsibleNavbar">
             <ul className="navbar-nav">
-              <li className="nav-item">
-                <a className="nav-link" href="#">Link</a>
-              </li>
               
             <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+              <span className="nav-link dropdown-toggle" id="navbardrop" data-toggle="dropdown">
                 Direct message
-              </a>
+              </span>
               <div className="dropdown-menu">
-                <span className="dropdown-item">Hitman</span>
-                <a className="dropdown-item" href="#">Simon</a>
-                <a className="dropdown-item" href="#">Mumina</a>
+                {users.map(u =>(
+                  <>
+                  <span key={Math.random()}
+                  className="dropdown-item"
+                  onClick={() =>setUsername(u.email)}
+                  >{u.email}</span>
+                  <span key={Math.random()} onClick={createDirectChat}>Chat</span>
+                  </>
+                ))}
+               
               </div>
             </li>
 
-            <li className="nav-item">
-                <a className="nav-link" href="#">Create Group</a>
-              </li>
+            <form className="form-inline" onSubmit={handleSubmit}>
+              <input 
+              className="form-control mr-sm-2" 
+              type="text" name="textInput" 
+              placeholder="Create new group" 
+              value = {value}
+              onChange={(e) => setValue(e.target.value)}
+              />
+
+              <button className="btn btn-success" type="submit">Create Group</button>
+            </form>
 
             <li className="nav-item">
-                <a onClick={handleLogout} className="nav-link" href="#">Logout</a>
+                <span onClick={handleLogout} className="nav-link">Logout</span>
               </li>
             </ul>
           </div>
@@ -154,9 +201,6 @@ function Chats() {
         projectID = { process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID }
         userName = {user.email}
         userSecret = {user.uid}
-        onConnect={(creds) => startDirectChat(creds)}
-        // onGetOtherPeople={(chatId, people) => console.log(people)}
-        // renderNewChatForm={(creds) => renderChatForm(creds)}
         />
     </div>
   );
