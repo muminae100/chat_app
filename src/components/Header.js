@@ -59,7 +59,7 @@ function Header() {
             <ul className="navbar-nav">
 
             <li className="nav-item">
-                <a className="nav-link" href="/chats">Direct Message</a>
+                <a className="nav-link" href="/chats">Chat with Me😂</a>
             </li>
 
             <form className="form-inline" onSubmit={handleSubmit}>
