@@ -77,8 +77,8 @@ function Chats() {
     }
     })
     .then((res) =>{
-      window.location.reload();
       console.log(res);
+      history.push('/chats')
     })
     .catch((error) =>{
       console.log(error.message);
