@@ -19,7 +19,7 @@ function Header() {
         formData,
         {headers: {
             "Project-ID": process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID,
-            "User-Name": user.email,
+            "User-Name": user.displayName,
             "User-Secret": user.uid,
         }
         })
