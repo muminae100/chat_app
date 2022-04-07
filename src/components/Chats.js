@@ -77,6 +77,7 @@ function Chats() {
     }
     })
     .then((res) =>{
+      window.location.reload();
       console.log(res);
     })
     .catch((error) =>{
