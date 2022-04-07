@@ -6,6 +6,7 @@ import "firebase/auth";
 import { auth } from "./firebase";
 
 function Login() {
+
   return (
     <div id="login-page">
         <div id="login-card">
