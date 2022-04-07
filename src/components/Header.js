@@ -19,7 +19,7 @@ function Header() {
         formData,
         {headers: {
             "Project-ID": process.env.REACT_APP_CHAT_ENGINE_PROJECT_ID,
-            "User-Name": user.displayName,
+            "User-Name": user.email,
             "User-Secret": user.uid,
         }
         })
@@ -59,7 +59,7 @@ function Header() {
             <ul className="navbar-nav">
 
             <li className="nav-item">
-                <a className="nav-link" href="/chats">Chat with Me😂</a>
+                <a className="nav-link" href="/chats">Chat with Me</a>
             </li>
 
             <form className="form-inline" onSubmit={handleSubmit}>
